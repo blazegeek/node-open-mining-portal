@@ -10,7 +10,7 @@ module.exports = function() {
     var version         = '0.1.0',
         PUBLIC_API_URL  = 'https://poloniex.com/public',
         PRIVATE_API_URL = 'https://poloniex.com/tradingApi',
-        USER_AGENT      = 'npm-crypto-apis/' + version
+        USER_AGENT      = 'npm-crypto-apis/' + version;
 
     // Constructor
     function Poloniex(key, secret){
@@ -92,12 +92,7 @@ module.exports = function() {
             return this._request(options, callback);
         },
 
-
-        /////
-
-
         // PUBLIC METHODS
-
         getTicker: function(callback){
             var parameters = {
                     command: 'returnTicker'
@@ -132,12 +127,7 @@ module.exports = function() {
             return this._public(parameters, callback);
         },
 
-
-        /////
-
-
         // PRIVATE METHODS
-
         myBalances: function(callback){
             var parameters = {
                     command: 'returnBalances'
