@@ -18,8 +18,6 @@ for(var i = 0; i < args.length; i++){
 
 var command = params.shift();
 
-
-
 var client = net.connect(options.port || defaultPort, options.host || defaultHost, function () {
     client.write(JSON.stringify({
         command: command,
