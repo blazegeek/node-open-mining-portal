@@ -1,0 +1,7 @@
+{
+	"name": "GeekCash",
+	"symbol": "GEEK",
+	"algorithm": "geek",
+	"peerMagic": "b86c6bb8",
+	"peerMagicTestnet": "cee2caff"
+}
