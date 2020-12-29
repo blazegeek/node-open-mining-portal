@@ -1,11 +1,9 @@
 var poolWorkerData;
 var poolHashrateData;
 var poolBlockData;
-
 var poolWorkerChart;
 var poolHashrateChart;
 var poolBlockChart;
-
 var statData;
 var poolKeys;
 
@@ -21,7 +19,6 @@ function buildChartData(){
         }
     }
 
-
     for (var i = 0; i < statData.length; i++){
 
         var time = statData[i].time * 1000;
@@ -36,16 +33,14 @@ function buildChartData(){
             if (pName in statData[i].pools){
                 a.hashrate.push([time, statData[i].pools[pName].hashrate]);
                 a.workers.push([time, statData[i].pools[pName].workerCount]);
-                a.blocks.push([time, statData[i].pools[pName].blocks.pending])
+                a.blocks.push([time, statData[i].pools[pName].blocks.pending]);
             }
             else{
                 a.hashrate.push([time, 0]);
                 a.workers.push([time, 0]);
-                a.blocks.push([time, 0])
+                a.blocks.push([time, 0]);
             }
-
         }
-
     }
 
     poolWorkerData = [];
@@ -64,7 +59,7 @@ function buildChartData(){
         poolBlockData.push({
             key: pool,
             values: pools[pool].blocks
-        })
+        });
     }
 }
 
@@ -89,8 +84,8 @@ function displayCharts(){
     nv.addGraph(function() {
         poolWorkerChart = nv.models.stackedAreaChart()
             .margin({left: 40, right: 40})
-            .x(function(d){ return d[0] })
-            .y(function(d){ return d[1] })
+            .x(function(d){ return d[0]; })
+            .y(function(d){ return d[1]; })
             .useInteractiveGuideline(true)
             .clipEdge(true);
 
@@ -103,12 +98,11 @@ function displayCharts(){
         return poolWorkerChart;
     });
 
-
     nv.addGraph(function() {
         poolHashrateChart = nv.models.lineChart()
             .margin({left: 60, right: 40})
-            .x(function(d){ return d[0] })
-            .y(function(d){ return d[1] })
+            .x(function(d){ return d[0]; })
+            .y(function(d){ return d[1]; })
             .useInteractiveGuideline(true);
 
         poolHashrateChart.xAxis.tickFormat(timeOfDayFormat);
@@ -122,11 +116,10 @@ function displayCharts(){
         return poolHashrateChart;
     });
 
-
     nv.addGraph(function() {
         poolBlockChart = nv.models.multiBarChart()
-            .x(function(d){ return d[0] })
-            .y(function(d){ return d[1] });
+            .x(function(d){ return d[0]; })
+            .y(function(d){ return d[1]; });
 
         poolBlockChart.xAxis.tickFormat(timeOfDayFormat);
 
@@ -197,6 +190,4 @@ statsSource.addEventListener('message', function(e){
         }
         TriggerChartUpdates();
     }
-
-
 });
