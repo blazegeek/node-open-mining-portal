@@ -9,7 +9,7 @@ module.exports = function() {
     // Constants
     var version         = '0.0.1',
         PUBLIC_API_URL  = 'http://www.coinwarz.com/v1/api/profitability/?apikey=YOUR_API_KEY&algo=all',
-        USER_AGENT      = 'nomp/node-open-mining-portal'
+        USER_AGENT      = 'nomp/node-open-mining-portal';
 
     // Constructor
     function Cryptsy(key, secret){
@@ -76,12 +76,7 @@ module.exports = function() {
             return this._request(options, callback);
         },
 
-
-        /////
-
-
         // PUBLIC METHODS
-
         getTicker: function(callback){
             var parameters = {
                     method: 'marketdatav2'
@@ -107,9 +102,8 @@ module.exports = function() {
 
             return this._public(parameters, callback);
         },
-
-
-        ////
+    };
         
     return CoinWarz;
+
 }();
