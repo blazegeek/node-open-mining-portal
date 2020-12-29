@@ -10,7 +10,7 @@ module.exports = function() {
     var version         = '0.1.0',
         PUBLIC_API_URL  = 'http://pubapi.cryptsy.com/api.php',
         PRIVATE_API_URL = 'https://api.cryptsy.com/api',
-        USER_AGENT      = 'nomp/node-open-mining-portal'
+        USER_AGENT      = 'nomp/node-open-mining-portal';
 
     // Constructor
     function Cryptsy(key, secret){
@@ -93,11 +93,7 @@ module.exports = function() {
         },
 
 
-        /////
-
-
         // PUBLIC METHODS
-
         getTicker: function(callback){
             var parameters = {
                     method: 'marketdatav2'
@@ -125,11 +121,7 @@ module.exports = function() {
         },
 
 
-        /////
-
-
         // PRIVATE METHODS
-
         myBalances: function(callback){
             var parameters = {
                     command: 'returnBalances'
