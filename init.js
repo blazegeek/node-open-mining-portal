@@ -2,7 +2,6 @@ var fs = require('fs');
 var path = require('path');
 var os = require('os');
 var cluster = require('cluster');
-
 var async = require('async');
 var extend = require('extend');
 
@@ -24,22 +23,16 @@ if (!fs.existsSync('config.json')){
 
 var portalConfig = JSON.parse(JSON.minify(fs.readFileSync("config.json", {encoding: 'utf8'})));
 var poolConfigs;
-
-
 var logger = new PoolLogger({
     logLevel: portalConfig.logLevel,
     logColors: portalConfig.logColors
 });
-
-
-
 
 try {
     require('newrelic');
     if (cluster.isMaster)
         logger.debug('NewRelic', 'Monitor', 'New Relic initiated');
 } catch(e) {}
-
 
 //Try to give process ability to handle 100k concurrent connections
 try{
@@ -66,7 +59,6 @@ catch(e){
         logger.debug('POSIX', 'Connection Limit', '(Safe to ignore) POSIX module not installed and resource (connection) limit was not raised');
 }
 
-
 if (cluster.isWorker){
 
     switch(process.env.workerType){
@@ -83,18 +75,14 @@ if (cluster.isWorker){
             new ProfitSwitch(logger);
             break;
     }
-
     return;
 } 
-
 
 //Read all pool configs from pool_configs and join them with their coin profile
 var buildPoolConfigs = function(){
     var configs = {};
     var configDir = 'pool_configs/';
-
     var poolConfigFiles = [];
-
 
     /* Get filenames of pool config json files that are enabled */
     fs.readdirSync(configDir).forEach(function(file){
@@ -104,7 +92,6 @@ var buildPoolConfigs = function(){
         poolOptions.fileName = file;
         poolConfigFiles.push(poolOptions);
     });
-
 
     /* Ensure no pool uses any of the same ports as another pool */
     for (var i = 0; i < poolConfigFiles.length; i++){
@@ -125,10 +112,8 @@ var buildPoolConfigs = function(){
                 process.exit(1);
                 return;
             }
-
         }
     }
-
 
     poolConfigFiles.forEach(function(poolOptions){
 
@@ -143,14 +128,20 @@ var buildPoolConfigs = function(){
         var coinProfile = JSON.parse(JSON.minify(fs.readFileSync(coinFilePath, {encoding: 'utf8'})));
         poolOptions.coin = coinProfile;
         poolOptions.coin.name = poolOptions.coin.name.toLowerCase();
+        if (coinProfile.mainnet) {
+            poolOptions.coin.mainnet.bip32.public = Buffer.from(coinProfile.mainnet.bip32.public, 'hex').readUInt32LE(0);
+            poolOptions.coin.mainnet.pubKeyHash = Buffer.from(coinProfile.mainnet.pubKeyHash, 'hex').readUInt8(0);
+            poolOptions.coin.mainnet.scriptHash = Buffer.from(coinProfile.mainnet.scriptHash, 'hex').readUInt8(0);
+        }
+        if (coinProfile.testnet) {
+            poolOptions.coin.testnet.bip32.public = Buffer.from(coinProfile.testnet.bip32.public, 'hex').readUInt32LE(0);
+            poolOptions.coin.testnet.pubKeyHash = Buffer.from(coinProfile.testnet.pubKeyHash, 'hex').readUInt8(0);
+            poolOptions.coin.testnet.scriptHash = Buffer.from(coinProfile.testnet.scriptHash, 'hex').readUInt8(0);
+        }
 
         if (poolOptions.coin.name in configs){
 
-            logger.error('Master', poolOptions.fileName, 'coins/' + poolOptions.coinFileName
-                + ' has same configured coin name ' + poolOptions.coin.name + ' as coins/'
-                + configs[poolOptions.coin.name].coinFileName + ' used by pool config '
-                + configs[poolOptions.coin.name].fileName);
-
+            logger.error('Master', poolOptions.fileName, 'coins/' + poolOptions.coinFileName + ' has same configured coin name ' + poolOptions.coin.name + ' as coins/' + configs[poolOptions.coin.name].coinFileName + ' used by pool config ' + configs[poolOptions.coin.name].fileName);
             process.exit(1);
             return;
         }
@@ -167,7 +158,6 @@ var buildPoolConfigs = function(){
             }
         }
 
-
         configs[poolOptions.coin.name] = poolOptions;
 
         if (!(coinProfile.algorithm in algos)){
@@ -178,8 +168,6 @@ var buildPoolConfigs = function(){
     });
     return configs;
 };
-
-
 
 var spawnPoolWorkers = function(){
 
@@ -196,7 +184,6 @@ var spawnPoolWorkers = function(){
         logger.warning('Master', 'PoolSpawner', 'No pool configs exists or are enabled in pool_configs folder. No pools spawned.');
         return;
     }
-
 
     var serializedConfigs = JSON.stringify(poolConfigs);
 
@@ -249,9 +236,7 @@ var spawnPoolWorkers = function(){
             logger.debug('Master', 'PoolSpawner', 'Spawned ' + Object.keys(poolConfigs).length + ' pool(s) on ' + numForks + ' thread(s)');
         }
     }, 250);
-
 };
-
 
 var startCliListener = function(){
 
@@ -284,7 +269,6 @@ var startCliListener = function(){
         }
     }).start();
 };
-
 
 var processCoinSwitchCommand = function(params, options, reply){
 
@@ -326,7 +310,6 @@ var processCoinSwitchCommand = function(params, options, reply){
         return;
     }
 
-
     var switchNames = [];
 
     if (params[1]) {
@@ -341,9 +324,7 @@ var processCoinSwitchCommand = function(params, options, reply){
 
     switchNames.forEach(function(name){
         if (poolConfigs[newCoin].coin.algorithm !== portalConfig.switching[name].algorithm){
-            replyError('Cannot switch a '
-                + portalConfig.switching[name].algorithm
-                + ' algo pool to coin ' + newCoin + ' with ' + poolConfigs[newCoin].coin.algorithm + ' algo');
+            replyError('Cannot switch a ' + portalConfig.switching[name].algorithm + ' algo pool to coin ' + newCoin + ' with ' + poolConfigs[newCoin].coin.algorithm + ' algo');
             return;
         }
 
@@ -353,10 +334,7 @@ var processCoinSwitchCommand = function(params, options, reply){
     });
 
     reply('Switch message sent to pool workers');
-
 };
-
-
 
 var startPaymentProcessor = function(){
 
@@ -385,7 +363,6 @@ var startPaymentProcessor = function(){
     });
 };
 
-
 var startWebsite = function(){
 
     if (!portalConfig.website.enabled) return;
@@ -402,7 +379,6 @@ var startWebsite = function(){
         }, 2000);
     });
 };
-
 
 var startProfitSwitch = function(){
 
@@ -425,19 +401,11 @@ var startProfitSwitch = function(){
 };
 
 
-
 (function init(){
-
     poolConfigs = buildPoolConfigs();
-
     spawnPoolWorkers();
-
     startPaymentProcessor();
-
     startWebsite();
-
     startProfitSwitch();
-
     startCliListener();
-
 })();
