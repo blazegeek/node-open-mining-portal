@@ -30,10 +30,10 @@
     },
 
     "website": {
-        "enabled": true,
+        "enabled": false,
         "host": "0.0.0.0",
         "port": 80,
-        "stratumHost": "cryppit.com",
+        "stratumHost": "blazegeek.com",
         "stats": {
             "updateInterval": 60,
             "historicalRetention": 43200,
@@ -105,9 +105,9 @@
         "enabled": false,
         "updateInterval": 600,
         "depth": 0.90,
-        "usePoloniex": true,
-        "useCryptsy": true,
-        "useMintpal": true,
-        "useBittrex": true
+        "usePoloniex": false,
+        "useCryptsy": false,
+        "useMintpal": false,
+        "useBittrex": false
     }
 }
