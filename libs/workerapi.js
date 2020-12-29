@@ -1,7 +1,6 @@
 var express = require('express');
 var os = require('os');
 
-
 function workerapi(listen) {
 	var _this = this;
 	var app = express();
@@ -25,7 +24,6 @@ function workerapi(listen) {
 		});
 	});
 
-
 	this.start = function (poolObj) {
 		this.poolObj = poolObj;
 		this.poolObj.once('started', function () {
@@ -47,10 +45,7 @@ function workerapi(listen) {
 				lastEvents.lastInvalidShare = now;
 			}
 		});
-	}
+	};
 }
 
-
-
 module.exports = workerapi;
-
