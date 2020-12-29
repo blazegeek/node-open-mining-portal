@@ -1,89 +1,81 @@
 var dateFormat = require('dateformat');
 var colors = require('colors');
 
-
 var severityToColor = function(severity, text) {
-    switch(severity) {
-        case 'special':
-            return text.cyan.underline;
-        case 'debug':
-            return text.green;
-        case 'warning':
-            return text.yellow;
-        case 'error':
-            return text.red;
-        default:
-            console.log("Unknown severity " + severity);
-            return text.italic;
-    }
+	switch(severity) {
+		case 'special':
+			return text.cyan.underline;
+		case 'debug':
+			return text.green;
+		case 'warning':
+			return text.yellow;
+		case 'error':
+			return text.red;
+		default:
+			console.log("Unknown severity " + severity);
+			return text.italic;
+	}
 };
 
 var severityValues = {
-    'debug': 1,
-    'warning': 2,
-    'error': 3,
-    'special': 4
+	'debug': 1,
+	'warning': 2,
+	'error': 3,
+	'special': 4
 };
-
 
 var PoolLogger = function (configuration) {
 
+	var logLevelInt = severityValues[configuration.logLevel];
+	var logColors = configuration.logColors;
 
-    var logLevelInt = severityValues[configuration.logLevel];
-    var logColors = configuration.logColors;
+	var log = function(severity, system, component, text, subcat) {
 
+		if (severityValues[severity] < logLevelInt) return;
 
+		if (subcat){
+			var realText = subcat;
+			var realSubCat = text;
+			text = realText;
+			subcat = realSubCat;
+		}
 
-    var log = function(severity, system, component, text, subcat) {
+		var entryDesc = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss') + ' [' + system + ']\t';
+		if (logColors) {
+			entryDesc = severityToColor(severity, entryDesc);
 
-        if (severityValues[severity] < logLevelInt) return;
+			var logString =
+					entryDesc +
+					('[' + component + '] ').italic;
 
-        if (subcat){
-            var realText = subcat;
-            var realSubCat = text;
-            text = realText;
-            subcat = realSubCat;
-        }
+			if (subcat)
+				logString += ('(' + subcat + ') ').bold.grey;
 
-        var entryDesc = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss') + ' [' + system + ']\t';
-        if (logColors) {
-            entryDesc = severityToColor(severity, entryDesc);
+			logString += text.grey;
+		}
+		else {
+			var logString =
+					entryDesc +
+					'[' + component + '] ';
 
-            var logString =
-                    entryDesc +
-                    ('[' + component + '] ').italic;
+			if (subcat)
+				logString += '(' + subcat + ') ';
 
-            if (subcat)
-                logString += ('(' + subcat + ') ').bold.grey;
+			logString += text;
+		}
 
-            logString += text.grey;
-        }
-        else {
-            var logString =
-                    entryDesc +
-                    '[' + component + '] ';
+		console.log(logString);
+	};
 
-            if (subcat)
-                logString += '(' + subcat + ') ';
-
-            logString += text;
-        }
-
-        console.log(logString);
-
-
-    };
-
-    // public
-
-    var _this = this;
-    Object.keys(severityValues).forEach(function(logType){
-        _this[logType] = function(){
-            var args = Array.prototype.slice.call(arguments, 0);
-            args.unshift(logType);
-            log.apply(this, args);
-        };
-    });
+	// public
+	var _this = this;
+	Object.keys(severityValues).forEach(function(logType){
+		_this[logType] = function(){
+			var args = Array.prototype.slice.call(arguments, 0);
+			args.unshift(logType);
+			log.apply(this, args);
+		};
+	});
 };
 
 module.exports = PoolLogger;
